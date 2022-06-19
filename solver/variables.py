@@ -1,3 +1,6 @@
+import re
+import sys
+
 import numpy as np
 import operator as op
 
@@ -11,14 +14,16 @@ class VarType(Enum):
     INTEGER = auto()
     REAL = auto()
 
+FORBIDDEN_NAME_PATTERN = re.compile(r"[^A-Z0-9_]")
 
 class _Variable:
-    def __init__(self, name, lb=None, ub=None) -> None:
-        self.name = name
-        self.lb = lb
-        self.ub = ub
+    def __init__(self, name: str, lb=None, ub=None) -> None:
+        name = name.upper().replace(" ", "_")
+        self.name = FORBIDDEN_NAME_PATTERN.sub("", name)
+        self.lb = lb if lb is not None else sys.float_info.min
+        self.ub = ub if ub is not None else sys.float_info.max
 
-        self.value = None
+        self.value = 0 if lb is None else lb
         self.type = None
 
     def set_value(self, v):
@@ -28,6 +33,12 @@ class _Variable:
         if name == "value":
             self.set_value(value)
         self.__dict__[name] = value
+
+    def __repr__(self) -> str:
+        return f"({self.__class__.__name__}: {self.name}, bounds:[{self.lb}, {self.ub}])"
+
+    def __str__(self) -> str:
+        return f"{self.name}"
 
     def __add__(self, other):
         return Expression(self, op.add, other)
