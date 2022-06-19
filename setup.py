@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='Cautious Sniffle',
+    name='CautiousSniffle',
     version='0.0.1',    
     description='A Python Non Linear Solver',
     url='https://github.com/araujo-fernando/cautious-sniffle',

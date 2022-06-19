@@ -14,12 +14,14 @@ class VarType(Enum):
     INTEGER = auto()
     REAL = auto()
 
-FORBIDDEN_NAME_PATTERN = re.compile(r"[^A-Z0-9_]")
+
+_FORBIDDEN_NAME_PATTERN = re.compile(r"[^A-Z0-9_]")
+
 
 class _Variable:
     def __init__(self, name: str, lb=None, ub=None) -> None:
         name = name.upper().replace(" ", "_")
-        self.name = FORBIDDEN_NAME_PATTERN.sub("", name)
+        self.name = _FORBIDDEN_NAME_PATTERN.sub("", name)
         self.lb = lb if lb is not None else sys.float_info.min
         self.ub = ub if ub is not None else sys.float_info.max
 
@@ -35,7 +37,9 @@ class _Variable:
         self.__dict__[name] = value
 
     def __repr__(self) -> str:
-        return f"({self.__class__.__name__}: {self.name}, bounds:[{self.lb}, {self.ub}])"
+        return (
+            f"({self.__class__.__name__}: {self.name}, bounds:[{self.lb}, {self.ub}])"
+        )
 
     def __str__(self) -> str:
         return f"{self.name}"
@@ -69,9 +73,10 @@ class _Variable:
 
     def __ge__(self, other):
         return Expression(self, op.ge, other)
-    
+
     def __gt__(self, other):
         return Expression(self, op.gt, other)
+
 
 class BinVariable(_Variable):
     def __init__(self, name) -> None:
