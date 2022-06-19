@@ -1,7 +1,9 @@
 import numpy as np
-
+import operator as op
 
 from enum import Enum, auto
+
+from expression import Expression
 
 
 class VarType(Enum):
@@ -28,36 +30,37 @@ class _Variable:
         self.__dict__[name] = value
 
     def __add__(self, other):
-        return self.value + other.value
-
-    def __iadd__(self, other):
-        self.set_value(self.value + other)
-        return self
+        return Expression(self, op.add, other)
 
     def __sub__(self, other):
-        return self.value - other.value
+        return Expression(self, op.sub, other)
 
-    def __isub__(self, other) :
-        self.set_value(self.value - other)
-        return self
-    
     def __mul__(self, other):
-        return self.value * other.value
-    
-    def __imul__(self, other) :
-        self.set_value(self.value * other)
-        return self
-    
-    def __truediv__(self, other):
-        return self.value / other.value
-    
-    def __itruediv__(self, other) :
-        self.set_value(self.value + other.value)
-        return self
-    
-    def __floordiv__(self, other) :
-        return self.value // other.value
+        return Expression(self, op.mul, other)
 
+    def __truediv__(self, other):
+        return Expression(self, op.truediv, other)
+
+    def __floordiv__(self, other):
+        return Expression(self, op.floordiv, other)
+
+    def __pow__(self, other):
+        return Expression(self, op.pow, other)
+
+    def __lt__(self, other):
+        return Expression(self, op.lt, other)
+
+    def __le__(self, other):
+        return Expression(self, op.le, other)
+
+    def __eq__(self, other):
+        return Expression(self, op.eq, other)
+
+    def __ge__(self, other):
+        return Expression(self, op.ge, other)
+    
+    def __gt__(self, other):
+        return Expression(self, op.gt, other)
 
 class BinVariable(_Variable):
     def __init__(self, name) -> None:
@@ -84,5 +87,3 @@ class RealVariable(_Variable):
 
     def set_value(self, v):
         self._value = np.clip(v, self.lb, self.ub)
-
-    
