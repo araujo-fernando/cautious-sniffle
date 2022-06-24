@@ -3,6 +3,7 @@ import sys
 
 import numpy as np
 import operator as op
+import random as rd
 
 from enum import Enum, auto
 
@@ -25,11 +26,18 @@ class _Variable:
         self.lb = lb if lb is not None else sys.float_info.min
         self.ub = ub if ub is not None else sys.float_info.max
 
-        self.value = 0 if lb is None else lb
+        self._value = 0 if lb is None else lb
         self.type = None
+
+    @property
+    def value(self):
+        return self._value
 
     def set_value(self, v):
         self._value = np.clip(v, self.lb, self.ub)
+
+    def set_random_value(self):
+        self._value = rd.uniform(self.lb, self.ub)
 
     def __setattr__(self, name, value):
         if name == "value":
@@ -77,6 +85,38 @@ class _Variable:
     def __gt__(self, other):
         return Expression(self, op.gt, other)
 
+    def __radd__(self, other):
+        return Expression(other, op.add, self)
+
+    def __rsub__(self, other):
+        return Expression(other, op.sub, self)
+
+    def __rmul__(self, other):
+        return Expression(other, op.mul, self)
+
+    def __rtruediv__(self, other):
+        return Expression(other, op.truediv, self)
+
+    def __rfloordiv__(self, other):
+        return Expression(other, op.floordiv, self)
+
+    def __rpow__(self, other):
+        return Expression(other, op.pow, self)
+
+    def __rlt__(self, other):
+        return Expression(other, op.lt, self)
+
+    def __rle__(self, other):
+        return Expression(other, op.le, self)
+
+    def __req__(self, other):
+        return Expression(other, op.eq, self)
+
+    def __rge__(self, other):
+        return Expression(other, op.ge, self)
+
+    def __rgt__(self, other):
+        return Expression(other, op.gt, self)
 
 class BinVariable(_Variable):
     def __init__(self, name) -> None:
