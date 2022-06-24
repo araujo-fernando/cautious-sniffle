@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import operator as op
 
 _OPERADORES = {
@@ -21,7 +23,7 @@ class Expression:
         self.b = b
 
     @property
-    def value(self):
+    def value(self) -> float | int:
         try:
             val_a = self.a.value
         except AttributeError:

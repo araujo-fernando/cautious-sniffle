@@ -37,7 +37,9 @@ class _Variable:
         self._value = np.clip(v, self.lb, self.ub)
 
     def set_random_value(self):
-        self._value = rd.uniform(self.lb, self.ub)
+        val = rd.uniform(self.lb, self.ub)
+        self.value = val  # type: ignore
+        return val
 
     def __setattr__(self, name, value):
         if name == "value":
@@ -117,6 +119,7 @@ class _Variable:
 
     def __rgt__(self, other):
         return Expression(other, op.gt, self)
+
 
 class BinVariable(_Variable):
     def __init__(self, name) -> None:

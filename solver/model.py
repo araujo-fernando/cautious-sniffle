@@ -9,6 +9,8 @@ class Model:
     def __init__(self) -> None:
         self._objectives: list[Expression] = list()
         self._vars: dict[str, RealVariable | BinVariable | IntVariable] = dict()
+        self._constraints: list[Expression] = list()
+        self._penalty = None
 
     @property
     def num_vars(self):
@@ -19,8 +21,20 @@ class Model:
         return deepcopy(self._vars)
 
     @property
+    def variables_values(self) -> dict[str, float]:
+        return {name: var.value for name, var in self._vars.items()}
+
+    @property
     def objectives(self):
         return deepcopy(self._objectives)
+
+    @property
+    def objective_values(self) -> list[float]:
+        objs = list(obj.value for obj in self._objectives)
+        if self._penalty is not None:
+            objs.append(self._penalty)
+
+        return objs
 
     def get_objective_x(self, id: int):
         if id >= len(self._objectives):
@@ -79,4 +93,18 @@ class Model:
     def set_variables_values(self, var_values: dict[str, int | float]):
         for var, val in var_values.items():
             if var in self._vars:
-                self._vars[var].value = val
+                self._vars[var].value = val  # type: ignore
+
+    def set_constraint_violation_penalty(self, value: float):
+        self._penalty = value
+
+    def insert_lt_zero_constraint(self, constraint: Expression):
+        """
+        Insert a constraint in the form:
+            expression <= 0
+
+        :param constraint: left hand side of expression
+        :type constraint: Expression
+        """
+        self._constraints.append(constraint)
+
