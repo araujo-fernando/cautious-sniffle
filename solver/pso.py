@@ -14,7 +14,7 @@ from expression import Expression
 
 class Particle:
     def __init__(self, model: Model, c1: float = 2, r1: float = None) -> None:
-        self._current_iter = 0
+        self._current_iter = 1
         self._model = model.copy()
         self._best_pos = self._model.variables_values
         self._best_pos_obj = sum(self.objective_values)
@@ -32,7 +32,7 @@ class Particle:
         self._model.set_constraint_violation_penalty(
             self._evaluate_constraint_penalties(self._current_iter)
         )
-        return list(obj.value for obj in self._model.objectives)
+        return self._model.objective_values
 
     @property
     def Pbest(self) -> dict[str, float]:
@@ -44,7 +44,7 @@ class Particle:
         return self._best_pos_obj
 
     def _evaluate_constraint_penalties(
-        self, iter: int, c: float = 0.5, alpha=2, a=1250, b=10
+        self, iter: int, c: float = 0.5, alpha=2, a=150, b=10
     ) -> float:
         Ci = (c * iter) ** alpha
 
@@ -52,7 +52,7 @@ class Particle:
             return max(0.0, x.value)
 
         def phi(qj) -> float:
-            return a * (1 - 1 / np.exp(qj)) + b
+            return a * (1 - (1 / np.exp(qj))) + b
 
         def gamma(qj) -> float:
             return 1 if qj <= 1 else 2
@@ -61,7 +61,7 @@ class Particle:
             viol = qj(constraint)
             return phi(viol) * (viol ** gamma(viol))
 
-        total_penalty = Ci * sum(
+        total_penalty = -1* Ci * sum(
             penalty(constraint) for constraint in self._model._constraints
         )
 
@@ -179,24 +179,28 @@ class ParticleSwarmOptimizer:
         Gbest_obj = self._particles[best_particle].Pbest_obj
         for it in tqdm(range(it_max)):
             Gbest_pos = self._particles[best_particle].Pbest
-            Gbest_obj = self._particles[best_particle].Pbest_obj
+            Gbest_obj = sum(self._particles[best_particle].objective_values)
             for j in range(self.num_particles):
                 p = self._particles[j]
-                if p.Pbest_obj > Gbest_obj:
+                obj = sum(p.objective_values)
+                if obj > Gbest_obj:
                     best_particle = j
+                    Gbest_pos = self._particles[best_particle].Pbest
+                    Gbest_obj = sum(self._particles[best_particle].objective_values)
 
             theta = theta_max - (theta_max - theta_min) / it_max * it
             for j in range(self.num_particles):
                 p = self._particles[j]
                 p.update_variables_speed_and_variables(r2, c2, theta, Gbest_pos, it)
 
-            obj_pool = [part.objective_values for part in self._particles]
-            if use_convergence_criteria and self._has_converged(obj_pool):
-                break
+            if use_convergence_criteria:
+                obj_pool = [part.objective_values for part in self._particles]
+                if self._has_converged(obj_pool):
+                    break
 
         for j in range(self.num_particles):
             p = self._particles[j]
-            if p.Pbest_obj > Gbest_obj:
+            if sum(p.objective_values) > Gbest_obj:
                 best_particle = j
 
         self.solution = self._particles[best_particle]._model
