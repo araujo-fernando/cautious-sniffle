@@ -54,20 +54,20 @@ class Model:
     def set_objective(self, expression):
         self.set_objective_x(expression, 0)
 
-    def create_binary_variables(self, data: list):
-        new_vars = {val: self._vars.get(val, BinVariable(val)) for val in data}
+    def create_binary_variables(self, name: str, data: list):
+        new_vars = {val: self._vars.get(name + str(val), BinVariable(val)) for val in data}
         for k, v in new_vars.items():
             self._vars[k] = v
         return new_vars
 
-    def create_integer_variables(self, data: list, lb=None, ub=None):
-        new_vars = {val: self._vars.get(val, IntVariable(val, lb, ub)) for val in data}
+    def create_integer_variables(self, name: str, data: list, lb=None, ub=None):
+        new_vars = {val: self._vars.get(name + str(val), IntVariable(val, lb, ub)) for val in data}
         for k, v in new_vars.items():
             self._vars[k] = v
         return new_vars
 
-    def create_real_variables(self, data: list, lb=None, ub=None):
-        new_vars = {val: self._vars.get(val, RealVariable(val, lb, ub)) for val in data}
+    def create_real_variables(self, name: str, data: list, lb=None, ub=None):
+        new_vars = {val: self._vars.get(name + str(val), RealVariable(val, lb, ub)) for val in data}
         for k, v in new_vars.items():
             self._vars[k] = v
         return new_vars
