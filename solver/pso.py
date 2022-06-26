@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import random as rd
-from traceback import print_tb
 import numpy as np
 
 from copy import deepcopy
-from enum import Enum, auto
 from tqdm import tqdm
 
 from model import Model
@@ -161,11 +159,11 @@ class ParticleSwarmOptimizer:
             self.r2 = np.clip(r2, 0, 1)
 
         self._particles = [Particle(self.model) for _ in range(self.num_particles)]
-        self._particle_objs = [part.objective_values for part in self._particles]
-
+        
+        self.evolution_data: list[list[list[float]]] = list()
         self.solution = None
 
-    def optimize(self, use_convergence_criteria: bool = False):
+    def optimize(self, use_convergence_criteria: bool = True):
         r2 = self.r2
         c2 = self.c2
         theta_max = self.theta_max
@@ -180,21 +178,24 @@ class ParticleSwarmOptimizer:
         for it in tqdm(range(it_max)):
             Gbest_pos = self._particles[best_particle].Pbest
             Gbest_obj = sum(self._particles[best_particle].objective_values)
+            obj_pool = list()
             for j in range(self.num_particles):
                 p = self._particles[j]
-                obj = sum(p.objective_values)
+                objectives = p.objective_values
+                obj_pool.append(objectives)
+                obj = sum(objectives)
                 if obj > Gbest_obj:
                     best_particle = j
+                    Gbest_obj = obj
                     Gbest_pos = self._particles[best_particle].Pbest
-                    Gbest_obj = sum(self._particles[best_particle].objective_values)
 
             theta = theta_max - (theta_max - theta_min) / it_max * it
             for j in range(self.num_particles):
                 p = self._particles[j]
                 p.update_variables_speed_and_variables(r2, c2, theta, Gbest_pos, it)
-
+            
+            self.evolution_data.append(obj_pool) 
             if use_convergence_criteria:
-                obj_pool = [part.objective_values for part in self._particles]
                 if self._has_converged(obj_pool):
                     break
 
@@ -202,7 +203,6 @@ class ParticleSwarmOptimizer:
             p = self._particles[j]
             if sum(p.objective_values) > Gbest_obj:
                 best_particle = j
-
         self.solution = self._particles[best_particle]._model
         return self.solution
 
@@ -216,7 +216,7 @@ class ParticleSwarmOptimizer:
         norm_obj = [(val - min_obj) / denom for val in objs]
 
         for val in norm_obj:
-            if val > 0.00001:
+            if val > 0.000001:
                 return False
 
         return True
