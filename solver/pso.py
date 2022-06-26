@@ -5,6 +5,7 @@ import numpy as np
 
 from copy import deepcopy
 from tqdm import tqdm
+from time import time
 
 from model import Model
 from expression import Expression
@@ -161,9 +162,11 @@ class ParticleSwarmOptimizer:
         self._particles = [Particle(self.model) for _ in range(self.num_particles)]
         
         self.evolution_data: list[list[list[float]]] = list()
+        self.solve_time = None
         self.solution = None
 
     def optimize(self, use_convergence_criteria: bool = True):
+        start_time = time()
         r2 = self.r2
         c2 = self.c2
         theta_max = self.theta_max
@@ -204,6 +207,9 @@ class ParticleSwarmOptimizer:
             if sum(p.objective_values) > Gbest_obj:
                 best_particle = j
         self.solution = self._particles[best_particle]._model
+        stop_time = time()
+        self.solve_time = stop_time - start_time
+        
         return self.solution
 
     def _has_converged(self, objectives) -> bool:

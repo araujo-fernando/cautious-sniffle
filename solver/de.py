@@ -1,15 +1,9 @@
 from __future__ import annotations
-from functools import total_ordering
 
 import random as rd
-import re
-from select import select
-from statistics import mode
-from turtle import Turtle
-import numpy as np
 
-from copy import deepcopy
 from tqdm import tqdm
+from time import time
 
 from model import Model
 from expression import Expression
@@ -90,6 +84,7 @@ class DifferentialEvolutionOptimizer:
         ]
 
         self.evolution_data: list[list[list[float]]] = list()
+        self.solve_time = None
         self.solution = None
 
     def _evatuate_constraint_violation_penalties(self):
@@ -191,6 +186,7 @@ class DifferentialEvolutionOptimizer:
         return new_tolerance
 
     def optimize(self, tolerance=5):
+        start_time = time()
         cr = self.crossover_rate
         for individual in self._population:
             individual.initialize_variables()
@@ -222,6 +218,9 @@ class DifferentialEvolutionOptimizer:
             if sum(obj) > best_obj:
                 best_ind = j
                 best_obj = sum(self._population[best_ind]._model.objective_values)
+
+        stop_time = time()
+        self.solve_time = stop_time - start_time
 
         return self._population[best_ind]._model
 
