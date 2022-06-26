@@ -108,3 +108,18 @@ class Model:
         """
         self._constraints.append(constraint)
 
+    def insert_eq_zero_constraint(self, constraint: Expression):
+        """
+        Insert a constraint in the form:
+            expression = 0
+
+        As two constraints in the form:
+            expression <= 0
+            -1 * expression <= 0
+
+        :param constraint: left hand side of expression
+        :type constraint: Expression
+        """
+        self._constraints.append(constraint)
+        self._constraints.append(-1*constraint)
+
