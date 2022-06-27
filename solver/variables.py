@@ -21,7 +21,7 @@ _FORBIDDEN_NAME_PATTERN = re.compile(r"[^A-Z0-9_]")
 
 class _Variable:
     def __init__(self, name: str, lb=None, ub=None) -> None:
-        name = name.upper().replace(" ", "_")
+        name = str(name).upper().replace(" ", "_")
         self.name = _FORBIDDEN_NAME_PATTERN.sub("", name)
         self.lb = lb if lb is not None else sys.float_info.min
         self.ub = ub if ub is not None else sys.float_info.max

@@ -123,3 +123,29 @@ class Model:
         self._constraints.append(constraint)
         self._constraints.append(-1*constraint)
 
+    def insert_lt_zero_constraints(self, constraints: list[Expression]):
+        """
+        Insert a constraint in the form:
+            expression <= 0
+
+        :param constraint: left hand side of expression
+        :type constraint: Expression
+        """
+        for cnstrt in constraints:
+            self._constraints.append(cnstrt)
+
+    def insert_eq_zero_constraints(self, constraints: list[Expression]):
+        """
+        Insert a constraint in the form:
+            expression = 0
+
+        As two constraints in the form:
+            expression <= 0
+            -1 * expression <= 0
+
+        :param constraint: left hand side of expression
+        :type constraint: Expression
+        """
+        for cnstrt in constraints:
+            self._constraints.append(cnstrt)
+            self._constraints.append(-1*cnstrt)
