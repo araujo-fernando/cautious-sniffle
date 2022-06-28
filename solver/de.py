@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random as rd
+import numpy as np
 
 from tqdm import tqdm
 from time import time
@@ -90,7 +91,15 @@ class DifferentialEvolutionOptimizer:
     def _evatuate_constraint_violation_penalties(self):
         def cv(individual: Individual):
             def cvj(gj: Expression):
-                return max(0, gj.value)
+                try:
+                    val = gj.value
+                except AttributeError:
+                    val = gj
+                try:
+                    ret_val = max(0.0, val)
+                except TypeError:
+                    ret_val = max(0.0, np.absolute(val))
+                return ret_val
 
             return [cvj(gj) for gj in individual._model._constraints]
 

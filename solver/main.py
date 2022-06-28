@@ -9,8 +9,8 @@ from time import time
 from solver import *
 
 ## CONFIGURAÇÕES PARA SOLVERS
-PSO_SWARM = 500
-DE_POPULATION = 500
+PSO_SWARM = 50
+DE_POPULATION = 50
 
 PSO_ITERATIONS = 300
 DE_ITERATIONS = 100
@@ -32,16 +32,14 @@ todos_pares = [(i, j) for i in nos for j in nos if (i != j) and (i not in nos_cl
 todos_pares_mercadorias = [(i, j, m) for i, j in todos_pares for m in mercadorias]
 fornecedores_mercadorias = [(i, m) for i in nos_fornecedores for m in mercadorias]
 ## GERAÇÃO DAS VARIÁVEIS
-p_0_m = model.create_real_variables("p_0_", mercadorias, lb=0, ub=1000)
-p_1_m = model.create_real_variables("p_1_", mercadorias, lb=0, ub=1000)
-p_2_m = model.create_real_variables("p_2_", mercadorias, lb=0, ub=1000)
+p_0_m = model.create_real_variables("p_0_", mercadorias, lb=10, ub=1000)
+p_1_m = model.create_real_variables("p_1_", mercadorias, lb=10, ub=1000)
+p_2_m = model.create_real_variables("p_2_", mercadorias, lb=10, ub=1000)
 
-s_0_i_m = model.create_integer_variables("s_0_", nos_intermediarios, lb=0, ub=5000)
-s_1_i_m = model.create_integer_variables("s_1_", nos_intermediarios, lb=0, ub=5000)
-s_2_i_m = model.create_integer_variables("s_2_", nos_intermediarios, lb=0, ub=5000)
+s_0_i_m = model.create_integer_variables("s_0_", nos_intermediarios, lb=10, ub=5000)
+s_1_i_m = model.create_integer_variables("s_1_", nos_intermediarios, lb=10, ub=5000)
+s_2_i_m = model.create_integer_variables("s_2_", nos_intermediarios, lb=10, ub=5000)
 
-v_i = model.create_real_variables("c_", nos, lb=0, ub=500)
-u_i = model.create_real_variables("u_", nos, lb=0, ub=500)
 b_i = model.create_binary_variables("b_", nos)
 
 c_i_j_m = model.create_real_variables("c_", todos_pares_mercadorias, lb=0, ub=100)
@@ -54,9 +52,11 @@ d_j_m = {(i, m): rd.uniform(10, 100) for i in nos_clientes for m in mercadorias}
 h_i_m = {(i, m): rd.uniform(100, 200) for i in nos for m in mercadorias}
 e_i = {i: rd.uniform(1000, 10000) for i in nos if i not in nos_clientes}
 h_m = {m: rd.uniform(0, 20) for m in mercadorias}
+v_i = {i: rd.uniform(50, 500) for i in nos}
+u_i = {i: rd.uniform(5, 50) for i in nos}
 
-alpha_m = {m: rd.uniform(0.001, 2) for m in mercadorias}
-eps_m = {m: rd.uniform(0.001, 2) for m in mercadorias}
+alpha_m = {m: rd.uniform(0.001, 0.999) for m in mercadorias}
+eps_m = {m: rd.uniform(0.001, 0.999) for m in mercadorias}
 gama_m = {m: rd.uniform(0.001, 2) for m in mercadorias}
 beta_m = {m: rd.uniform(0.001, 0.999) for m in mercadorias}
 r_m = {m: alpha_m[m] * beta_m[m] / gama_m[m] for m in mercadorias}
@@ -81,6 +81,7 @@ objetivo = (
     - sum(u_i[i] * b_i[i] for i in nos)
 )
 
+model.set_objective(objetivo)
 ## GERAÇÃO DAS RESTRIÇÕES DE IGUALDADE
 r_18 = [
     g_j_m.get((j, m), 0)
@@ -159,14 +160,14 @@ pso = ParticleSwarmOptimizer(
 )
 print("DE Solution:")
 de_solution = de.optimize()
-pprint({name: var._value for name, var in de_solution._vars.items()})
+# pprint({name: var._value for name, var in de_solution._vars.items()})
 print("With costs:")
 pprint(de_solution.objective_values)
 print(f"In {de.solve_time} seconds\n")
 
 print("PSO Solution:")
 pso_solution = pso.optimize()
-pprint({name: var._value for name, var in pso_solution._vars.items()})
+# pprint({name: var._value for name, var in pso_solution._vars.items()})
 print("With costs:")
 pprint(pso_solution.objective_values)
 print(f"In {pso.solve_time} seconds\n")

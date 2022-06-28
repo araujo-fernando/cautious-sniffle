@@ -48,10 +48,22 @@ class Particle:
         Ci = (c * iter) ** alpha
 
         def qj(x: Expression) -> float:
-            return max(0.0, x.value)
+            try:
+                val = x.value
+            except AttributeError:
+                val = x
+            try:
+                ret_val = max(0.0, val)
+            except TypeError:
+                ret_val = max(0.0, np.absolute(val))
+            return ret_val
 
         def phi(qj) -> float:
-            return a * (1 - (1 / np.exp(qj))) + b
+            try:
+                val = a * (1 - (1 / np.exp(qj))) + b
+            except RuntimeWarning:
+                val = 10 ** 10
+            return val
 
         def gamma(qj) -> float:
             return 1 if qj <= 1 else 2
