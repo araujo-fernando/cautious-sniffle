@@ -3,28 +3,39 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from pprint import pprint
+from multiprocessing import freeze_support
 
 from model import Model
 from pso import ParticleSwarmOptimizer
 from de import DifferentialEvolutionOptimizer
+from experiments import realize_experiments
 
-model = Model()
-p = model.create_real_variable("p", 0, 500)
-t = model.create_real_variable("t", 30, 100)
-i = model.create_integer_variable("i", 50, 100)
-obj = 500 * (100 - ((p - 200) ** 2)) * (t ** 0.3) * (i ** 0.25)
-constr = p - 300
-constr2 = t - 60
-constr3 = i - 90
-model.set_objective(obj)
-model.insert_lt_zero_constraint(constr)
-model.insert_lt_zero_constraint(constr2)
-model.insert_eq_zero_constraint(constr3)
-print("Maximize:")
-print(obj)
-print("Subject to:")
-pprint(model._constraints)
-print()
+if __name__ == '__main__':
+    freeze_support()
+    model = Model()
+    p = model.create_real_variable("p", 0, 500)
+    t = model.create_real_variable("t", 30, 100)
+    i = model.create_integer_variable("i", 50, 100)
+    obj = 500 * (100 - ((p - 200) ** 2)) * (t ** 0.3) * (i ** 0.25)
+    constr = p - 300
+    constr2 = t - 60
+    constr3 = i - 90
+    model.set_objective(obj)
+    model.insert_lt_zero_constraint(constr)
+    model.insert_lt_zero_constraint(constr2)
+    model.insert_eq_zero_constraint(constr3)
+    print("Maximize:")
+    print(obj)
+    print("Subject to:")
+    pprint(model._constraints)
+    print()
+
+    realize_experiments(model, 500, 500, 300)
+
+quit()
+
+
+
 
 de = DifferentialEvolutionOptimizer(model, max_iterations=100, num_individuals=500)
 pso = ParticleSwarmOptimizer(model, max_iterations=300, num_particles=500)

@@ -175,7 +175,8 @@ class ParticleSwarmOptimizer:
         
         self.evolution_data: list[list[list[float]]] = list()
         self.solve_time = None
-        self.solution = None
+        self.solution = self.optimize()
+
 
     def optimize(self, use_convergence_criteria: bool = False):
         start_time = time()
@@ -218,11 +219,11 @@ class ParticleSwarmOptimizer:
             p = self._particles[j]
             if sum(p.objective_values) > Gbest_obj:
                 best_particle = j
-        self.solution = self._particles[best_particle]._model
+        solution = self._particles[best_particle]._model
         stop_time = time()
         self.solve_time = stop_time - start_time
         
-        return self.solution
+        return solution
 
     def _has_converged(self, objectives) -> bool:
         objs = [sum(val) for val in objectives]

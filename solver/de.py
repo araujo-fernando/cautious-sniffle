@@ -86,7 +86,8 @@ class DifferentialEvolutionOptimizer:
 
         self.evolution_data: list[list[list[float]]] = list()
         self.solve_time = None
-        self.solution = None
+        self.solution = self.optimize()
+
 
     def _evatuate_constraint_violation_penalties(self):
         def cv(individual: Individual):
