@@ -8,16 +8,17 @@ from time import time
 
 from solver import *
 
+PLOT = False
 ## CONFIGURAÇÕES PARA SOLVERS
-PSO_SWARM = 50
-DE_POPULATION = 50
+PSO_SWARM = 500
+DE_POPULATION = 250
 
-PSO_ITERATIONS = 300
-DE_ITERATIONS = 100
+PSO_ITERATIONS = 900
+DE_ITERATIONS = PSO_ITERATIONS//3
 ## CONFIGURAÇÕES PARA MONTAGEM DO PROBLEMA
 T = 60
 TOTAL_NOS = 10
-TOTAL_MERCADORIAS = 2 * TOTAL_NOS
+TOTAL_MERCADORIAS = TOTAL_NOS // 2
 
 model = Model()
 
@@ -32,13 +33,13 @@ todos_pares = [(i, j) for i in nos for j in nos if (i != j) and (i not in nos_cl
 todos_pares_mercadorias = [(i, j, m) for i, j in todos_pares for m in mercadorias]
 fornecedores_mercadorias = [(i, m) for i in nos_fornecedores for m in mercadorias]
 ## GERAÇÃO DAS VARIÁVEIS
-p_0_m = model.create_real_variables("p_0_", mercadorias, lb=10, ub=1000)
-p_1_m = model.create_real_variables("p_1_", mercadorias, lb=10, ub=1000)
-p_2_m = model.create_real_variables("p_2_", mercadorias, lb=10, ub=1000)
+p_0_m = model.create_real_variables("p_0_", mercadorias, lb=10, ub=500)
+p_1_m = model.create_real_variables("p_1_", mercadorias, lb=500, ub=1000)
+p_2_m = model.create_real_variables("p_2_", mercadorias, lb=250, ub=750)
 
-s_0_i_m = model.create_integer_variables("s_0_", nos_intermediarios, lb=10, ub=5000)
-s_1_i_m = model.create_integer_variables("s_1_", nos_intermediarios, lb=10, ub=5000)
-s_2_i_m = model.create_integer_variables("s_2_", nos_intermediarios, lb=10, ub=5000)
+s_0_i_m = model.create_integer_variables("s_0_", nos_intermediarios, lb=2000, ub=3000)
+s_1_i_m = model.create_integer_variables("s_1_", nos_intermediarios, lb=1500, ub=2500)
+s_2_i_m = model.create_integer_variables("s_2_", nos_intermediarios, lb=1000, ub=2000)
 
 b_i = model.create_binary_variables("b_", nos)
 
@@ -158,12 +159,6 @@ de = DifferentialEvolutionOptimizer(
 pso = ParticleSwarmOptimizer(
     model, max_iterations=PSO_ITERATIONS, num_particles=PSO_SWARM
 )
-print("DE Solution:")
-de_solution = de.optimize()
-# pprint({name: var._value for name, var in de_solution._vars.items()})
-print("With costs:")
-pprint(de_solution.objective_values)
-print(f"In {de.solve_time} seconds\n")
 
 print("PSO Solution:")
 pso_solution = pso.optimize()
@@ -172,7 +167,16 @@ print("With costs:")
 pprint(pso_solution.objective_values)
 print(f"In {pso.solve_time} seconds\n")
 
+print("DE Solution:")
+de_solution = de.optimize()
+# pprint({name: var._value for name, var in de_solution._vars.items()})
+print("With costs:")
+pprint(de_solution.objective_values)
+print(f"In {de.solve_time} seconds\n")
+
 ## DE METRICS
+if not PLOT:
+    quit()
 evolution_data = de.evolution_data
 objectives = [[val[0] for val in it] for it in evolution_data]
 penalties = [[val[1] for val in it] for it in evolution_data]

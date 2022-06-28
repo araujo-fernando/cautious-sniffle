@@ -177,7 +177,7 @@ class ParticleSwarmOptimizer:
         self.solve_time = None
         self.solution = None
 
-    def optimize(self, use_convergence_criteria: bool = True):
+    def optimize(self, use_convergence_criteria: bool = False):
         start_time = time()
         r2 = self.r2
         c2 = self.c2
