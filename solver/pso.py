@@ -137,6 +137,8 @@ class ParticleSwarmOptimizer:
     def __init__(
         self,
         model: Model,
+        num_particles,
+        max_iterations,
         **kwargs,
     ) -> None:
         """
@@ -157,12 +159,12 @@ class ParticleSwarmOptimizer:
         :param r2: learning rate weight, defaults to None
         :type r2: float, optional
         """
-        self.model = model.copy()
+        self.model = model
 
-        self.num_particles = kwargs.get("num_particles", 100)
+        self.num_particles = num_particles
         self.theta_max = kwargs.get("theta_max", 0.9)
         self.theta_min = kwargs.get("theta_min", 0.4)
-        self.max_iterations = kwargs.get("max_iterations", 10_000)
+        self.max_iterations = max_iterations
         self.c2 = kwargs.get("c2", 2)
 
         r2 = kwargs.get("r2", None)

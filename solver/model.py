@@ -25,6 +25,10 @@ class Model:
         return {name: var.value for name, var in self._vars.items()}
 
     @property
+    def export_solution(self) -> dict[str, float]:
+        return {var.name: var.value for var in self._vars.values()}
+
+    @property
     def objectives(self):
         return deepcopy(self._objectives)
 

@@ -65,7 +65,7 @@ class DifferentialEvolutionOptimizer:
         max_iterations: int = 10000,
         crossover_rate: float = 0.95,
     ) -> None:
-        self._model = model.copy()
+        self._model = model
 
         self.num_individuals = num_individuals
         self.max_iterations = max_iterations

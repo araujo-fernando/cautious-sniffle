@@ -2,60 +2,16 @@ from __future__ import annotations
 import os
 
 import random as rd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 import json
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from time import time
+from pprint import pprint
+
 from solver import Model, ParticleSwarmOptimizer, DifferentialEvolutionOptimizer
-
-
-def create_pso(model, num_particles, max_iterations):
-    ps = ParticleSwarmOptimizer(
-        model, num_particles=num_particles, max_iterations=max_iterations
-    )
-    return ps
-
-def create_de(model, num_particles, max_iterations):
-    de = DifferentialEvolutionOptimizer(
-        model, num_individuals=num_particles, max_iterations=max_iterations
-    )
-    return de
-
-def realize_experiments(
-    model: Model,
-    PSO_SWARM=500,
-    DE_POPULATION=250,
-    PSO_ITERATIONS=900,
-):
-    DE_ITERATIONS = PSO_ITERATIONS // 3
-
-    with ProcessPoolExecutor(10) as exec:
-        futures = [
-            exec.submit(
-                create_pso,
-                model.copy(),
-                PSO_SWARM,
-                PSO_ITERATIONS,
-            )
-            for _ in range(10)
-        ]
-        for future in as_completed(futures):
-            pso = future.result()
-            dump_json_results(pso)
-
-    with ProcessPoolExecutor(10) as exec:
-        futures = [
-            exec.submit(
-                create_de,
-                model.copy(),
-                DE_POPULATION,
-                DE_ITERATIONS,
-            )
-            for _ in range(10)
-        ]
-        for future in as_completed(futures):
-            pso = future.result()
-            dump_json_results(pso)
 
 
 def dump_json_results(
@@ -67,17 +23,18 @@ def dump_json_results(
     num_vars = solution.num_vars
     num_constrs = len(solution._constraints)
     objectives = solution.objective_values
-    solution_variables_values = solution.variables_values
+    solution_variables_values = solution.export_solution
 
     if isinstance(optimizer, ParticleSwarmOptimizer):
-        file_name = "pso_"
+        extension = "_pso.json"
         max_iterations = optimizer.max_iterations
         population = optimizer.num_particles
     else:
-        file_name = "de_"
+        extension = "_de.json"
         max_iterations = optimizer.max_iterations
         population = optimizer.num_individuals
-    file_name += f"{max_iterations}it_{population}_ind{num_vars}var_{num_constrs}cnstr"
+
+    file_name = f"{max_iterations}it_{population}_ind{num_vars}var_{num_constrs}cnstr"
 
     experiment_data = {
         "solve_time": solve_time,
@@ -92,16 +49,16 @@ def dump_json_results(
     to_dump = json.dumps(experiment_data)
 
     for i in range(10):
-        name = file_name + f"_{i}.json"
-        if not os.path.isfile(name):
+        name = file_name + f"_{i}"
+        if not os.path.isfile("results/" + name + extension):
             file_name = name
             break
 
-    with open(file_name + ".json", "w") as f:
+    with open("results/" + file_name + extension, "w") as f:
         f.write(to_dump)
 
 
-def assemble_model(TOTAL_NOS=10, T=60):
+def assemble_model(TOTAL_NOS=10, T=60) -> tuple[Model, float]:
     TOTAL_MERCADORIAS = TOTAL_NOS // 2
     model = Model()
 
@@ -255,3 +212,79 @@ def assemble_model(TOTAL_NOS=10, T=60):
     end_time = time()
 
     return model, (end_time - start_time)
+
+
+def bark(model):
+    de = DifferentialEvolutionOptimizer(model, max_iterations=100, num_individuals=500)
+    pso = ParticleSwarmOptimizer(model, max_iterations=300, num_particles=500)
+    best_individual = de.optimize()
+    print("DE Solution:")
+    pprint({name: var._value for name, var in best_individual._vars.items()})
+    print("With costs:")
+    pprint(best_individual.objective_values)
+    print(f"In {de.solve_time} seconds\n")
+
+    best_particle = pso.optimize()
+    print("PSO Solution:")
+    pprint({name: var._value for name, var in best_particle._vars.items()})
+    print("With costs:")
+    pprint(best_particle.objective_values)
+    print(f"In {pso.solve_time} seconds\n")
+
+    ## DE METRICS
+    evolution_data = de.evolution_data
+    objectives = [[val[0] for val in it] for it in evolution_data]
+    penalties = [[val[1] for val in it] for it in evolution_data]
+
+    for data in objectives:
+        data.sort()
+    for data in penalties:
+        data.sort()
+
+    objectives = list(map(list, zip(*objectives)))
+    penalties = list(map(list, zip(*penalties)))
+
+    objectives = np.array(objectives)
+    min_value = objectives.min()
+    max_value = objectives.max()
+    objectives = (objectives - min_value) / (max_value - min_value)
+
+    penalties = np.array(penalties)
+    min_value = penalties.min()
+    max_value = penalties.max()
+    penalties = (penalties - min_value) / (max_value - min_value)
+
+    objs_evo = sns.heatmap(objectives)
+    plt.show()
+
+    pen_evo = sns.heatmap(penalties)
+    plt.show()
+
+    ## PSO METRICS
+    evolution_data = pso.evolution_data
+    objectives = [[val[0] for val in it] for it in evolution_data]
+    penalties = [[val[1] for val in it] for it in evolution_data]
+
+    for data in objectives:
+        data.sort()
+    for data in penalties:
+        data.sort()
+
+    objectives = list(map(list, zip(*objectives)))
+    penalties = list(map(list, zip(*penalties)))
+
+    objectives = np.array(objectives)
+    min_value = objectives.min()
+    max_value = objectives.max()
+    objectives = (objectives - min_value) / (max_value - min_value)
+
+    penalties = np.array(penalties)
+    min_value = penalties.min()
+    max_value = penalties.max()
+    penalties = (penalties - min_value) / (max_value - min_value)
+
+    objs_evo = sns.heatmap(objectives)
+    plt.show()
+
+    pen_evo = sns.heatmap(penalties)
+    plt.show()
