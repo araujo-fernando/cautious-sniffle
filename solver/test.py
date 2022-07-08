@@ -57,9 +57,9 @@ def realize_experiments(
 
 
 if __name__ == "__main__":
-    total_nos = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-    population = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
-    iterations = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    total_nos = [8, 9]
+    population = [50, 100, 150, 250, 300, 350, 400, 450, 500]
+    iterations = [1000]
     for nos in total_nos:
         model, t = assemble_model(nos)
         print(f"Model time: {t} for {nos} nodes with {model.num_vars} variables.")

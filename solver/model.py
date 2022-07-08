@@ -59,35 +59,35 @@ class Model:
         self.set_objective_x(expression, 0)
 
     def create_binary_variables(self, name: str, data: list):
-        new_vars = {val: self._vars.get(name + str(val), BinVariable(val)) for val in data}
-        for k, v in new_vars.items():
-            self._vars[k] = v
+        new_vars = {val: BinVariable(name + str(val)) for val in data}
+        for v in new_vars.values():
+            self._vars[v.name] = v
         return new_vars
 
     def create_integer_variables(self, name: str, data: list, lb=None, ub=None):
-        new_vars = {val: self._vars.get(name + str(val), IntVariable(val, lb, ub)) for val in data}
-        for k, v in new_vars.items():
-            self._vars[k] = v
+        new_vars = {val: IntVariable(name + str(val), lb, ub) for val in data}
+        for v in new_vars.values():
+            self._vars[v.name] = v
         return new_vars
 
     def create_real_variables(self, name: str, data: list, lb=None, ub=None):
-        new_vars = {val: self._vars.get(name + str(val), RealVariable(val, lb, ub)) for val in data}
-        for k, v in new_vars.items():
-            self._vars[k] = v
+        new_vars = {val: RealVariable(name + str(val), lb, ub) for val in data}
+        for v in new_vars.values():
+            self._vars[v.name] = v
         return new_vars
 
     def create_binary_variable(self, name: str):
-        new_var = self._vars.get(name, BinVariable(name))
+        new_var = BinVariable(name)
         self._vars[name] = new_var
         return new_var
 
     def create_integer_variable(self, name: str, lb=None, ub=None):
-        new_var = self._vars.get(name, IntVariable(name, lb, ub))
+        new_var = IntVariable(name, lb, ub)
         self._vars[name] = new_var
         return new_var
 
     def create_real_variable(self, name: str, lb=None, ub=None):
-        new_var = self._vars.get(name, RealVariable(name, lb, ub))
+        new_var = RealVariable(name, lb, ub)
         self._vars[name] = new_var
         return new_var
 
