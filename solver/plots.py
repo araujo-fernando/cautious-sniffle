@@ -63,7 +63,9 @@ def create_resume_table(pso_params: list, de_params: list):
 
         return indiv, np.mean(solve_times), np.std(solve_times), np.min(objectives), np.max(objectives), np.mean(objectives), np.std(objectives)
 
-    header = "Variáveis&Restrições&População&Tempo Médio&Pior Objetio&Melhor Objetivo&Média dos Objetivos\n"
+    cenarios ={(87, 86): "A", (181, 153): "B", (251, 177): "C", (435, 268): "D", (559, 300): "E", (774, 420): "F"}
+
+    header = "Cenário&População&Tempo Médio&Pior Objetio&Melhor Objetivo&Média dos Objetivos\n"
     ps_data = ""
     de_data = ""
     comp_data = ""
@@ -77,13 +79,13 @@ def create_resume_table(pso_params: list, de_params: list):
         de_pop, de_time, de_time_std, de_min, de_max, de_mean, de_std = extract_data(de_param, "de")
         time_ratio = 100*ps_time/de_time
 
-        ps_data += f"${vars:d}$&${constrs:d}$&"
+        ps_data += f"{cenarios[(vars, constrs)]}&"
         ps_data += f"${ps_pop}$&${ps_time:.2f}\\pm{ps_time_std:.2f}$&${ps_min:.2f}$&${ps_max:.2f}$&${ps_mean:.2f}\\pm{ps_std:.2f}$\n"
     
-        de_data += f"${vars:d}$&${constrs:d}$&"
+        de_data += f"{cenarios[(vars, constrs)]}&"
         de_data += f"${de_pop}$&${de_time:.2f}\\pm{de_time_std:.2f}$&${de_min:.2f}$&${de_max:.2f}$&${de_mean:.2f}\\pm{de_std:.2f}$\n"
 
-        comp_data += f"${vars:d}$&${constrs:d}$&${ps_pop}$&${time_ratio:.2f}\\%$\n"
+        comp_data += f"{cenarios[(vars, constrs)]}&${ps_pop}$&${time_ratio:.2f}\\%$\n"
 
     with open("ps_table.txt", "w") as f:
         f.write(header)
@@ -92,7 +94,7 @@ def create_resume_table(pso_params: list, de_params: list):
         f.write(header)
         f.write(de_data)
     with open("comp_table.txt", "w") as f:
-        f.write("Variáveis & Restrições & População & Razão de Tempo\n")
+        f.write("Cenário & População & Razão de Tempo\n")
         f.write(comp_data)
 
 # ['solve_time', 'evo_data', 'num_vars', 'num_constrs', 'objectives',
