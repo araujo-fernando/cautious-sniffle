@@ -33,8 +33,42 @@ def plot_evolution_heat_map(evolution_data: list[list[list[float]]]):
     objs_evo = sns.heatmap(objectives)
     plt.show()
 
-    pen_evo = sns.heatmap(penalties)
-    plt.show()
+
+def create_heatmaps(pso_params: list, de_params: list):
+    def get_best_execution_data(params: tuple, algo: str="de"):
+        iters, indiv, vars, constrs = params
+        experiment_files = [
+            path + f"{iters}it_{indiv}_ind{vars}var_{constrs}cnstr_{i}_{algo}.json"
+            for i in range(10)
+        ]
+
+        evo_data = None
+        objectives = None
+        for experiment in experiment_files:
+            dados = load_file_data(experiment)
+            obj = dados["objectives"][0]
+            if objectives is None:
+                objectives = obj
+                evo_data = dados["evo_data"]
+            if sum(obj) > sum(objectives):
+                objectives = obj
+                evo_data = dados["evo_data"]
+
+        return evo_data
+
+    cenarios = {(87, 86): "A", (181, 153): "B", (251, 177): "C", (435, 268): "D", (559, 300): "E", (774, 420): "F"}
+
+    for i in range(len(pso_params)):
+        pso_param = pso_params[i]
+        de_param = de_params[i]
+        pso_iter, pso_pop, vars, constrs = pso_param
+        de_iter, de_pop, vars, constrs = pso_param
+        cenario = cenarios[(vars, constrs)]
+
+        ps_evo_data = get_best_execution_data(pso_param, "pso")
+        # de_evo_data = get_best_execution_data(de_param, "de")        
+
+
 
 
 def load_file_data(file_name: str):
@@ -111,11 +145,22 @@ pso_params = list(set(re.match(regex, arq).groups() for arq in pso_files))
 de_params = list(set(re.match(regex, arq).groups() for arq in de_files))
 
 # iterations, population, variables, constraints
-pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in pso_params if p[0] == "1000"]
-de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in de_params if p[0] == "333"]
+pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in pso_params if p[0] == "1000" and p[1] != "200"]
+de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in de_params if p[0] == "333" and p[1] != "100"]
 
-pso_params = sorted(pso_params, key=lambda p: (p[2], p[3], p[0], p[1]))
-de_params = sorted(de_params, key=lambda p: (p[2], p[3], p[0], p[1]))
+pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
+de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
 
-create_resume_table(pso_params, de_params)
+# create_resume_table(pso_params, de_params)
+# create_heatmaps(pso_params, de_params)
+
+# pso_pairs = list()
+# de_pairs = list()
+# for population in [50, 100, 150, 250, 300, 350, 400, 450, 500]:
+#     for variables, constraints in [(87, 86), (181, 153), (251, 177), (435, 268), (559, 300), (774, 420)]:
+#         pso_pairs.append((1000, population, variables, constraints))
+#         de_pairs.append((333, population//2, variables, constraints))
+# from pprint import pprint
+# pprint([t for t in pso_pairs if t not in pso_params])
+# pprint([t for t in de_pairs if t not in de_params])
 
