@@ -70,7 +70,6 @@ def create_heatmaps(parameters: list, algo: str):
     cenarios = {(87, 86): "A", (181, 153): "B", (251, 177): "C", (435, 268): "D", (559, 300): "E", (774, 420): "F"}
 
     fig, axn = plt.subplots(3, 2, sharex=True, sharey=True, figsize=(9, 9))
-    cbar_ax = fig.add_axes([.91, .3, .03, .4])
 
     for i in range(len(parameters)):
         par = parameters[i]
@@ -85,7 +84,7 @@ def create_heatmaps(parameters: list, algo: str):
         evo_data = get_best_execution_data(par, algo)
         pen_obj, objs, pens = normalize_evolution_data(evo_data)
         ax = plt.subplot(3, 2, i+1)
-        sns.heatmap(objs, annot=False, cbar_ax=cbar_ax, ax=ax)
+        sns.heatmap(objs, annot=False, ax=ax)
         plt.xticks(xticks, xlabels)
         plt.yticks(yticks, ylabels)
         ax.set_title(f"Função Objetivo do Cenário {cenario}")
@@ -277,24 +276,24 @@ all_de_params = list(set(re.match(regex, arq).groups() for arq in de_files))
 #     create_resume_table(pso_params, de_params)
 
 # iterations, population, variables, constraints
-variables = {"87", "181", "251", "435", "559", "774"}
-for vari in tqdm(variables):
-    pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_pso_params if p[0] == "1000" and p[2] == vari and p[1] != "200"]
-    de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_de_params if p[0] == "333" and p[2] == vari and p[1] != "100"]
+# variables = {"87", "181", "251", "435", "559", "774"}
+# for vari in tqdm(variables):
+#     pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_pso_params if p[0] == "1000" and p[2] == vari and p[1] != "200"]
+#     de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_de_params if p[0] == "333" and p[2] == vari and p[1] != "100"]
 
-    pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
-    de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
-    create_paretos(de_params, "de")
-    create_paretos(pso_params, "pso")
+#     pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
+#     de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
+#     create_paretos(de_params, "de")
+#     create_paretos(pso_params, "pso")
 
 # iterations, population, variables, constraints
 population = [500 - 50*val for val in range(10)]
 for pop in tqdm(population):
-    pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_pso_params if p[0] == "1000" and int(p[1]) == pop]
-    de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_de_params if p[0] == "333" and int(p[1]) == pop//2]
+    pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_pso_params if p[0] == "1000" and int(p[1]) == pop and p[1] != "200"]
+    de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_de_params if p[0] == "333" and int(p[1]) == pop//2 and p[1] != "100"]
 
     pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
-    de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
+    de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3])) 
 
     create_heatmaps(de_params, "de")
     create_heatmaps(pso_params, "pso")
