@@ -107,7 +107,6 @@ def create_resume_table(pso_params: list, de_params: list):
 
     cenarios ={(87, 86): "A", (181, 153): "B", (251, 177): "C", (435, 268): "D", (559, 300): "E", (774, 420): "F"}
 
-    header = "Cenário&População&Tempo Médio&Pior Objetio&Melhor Objetivo&Média dos Objetivos\n"
     ps_data = ""
     de_data = ""
     comp_data = ""
@@ -129,22 +128,18 @@ def create_resume_table(pso_params: list, de_params: list):
 
     def header(algo):
         return (
-            "\\begin{table}[]\n"
-            + "\\centering\n"
-            + "\\caption{Resultados dos experimentos para os modelos do cenário "
+            "\\caption{Resultados dos experimentos para os modelos do cenário "
             + f"{cenarios[(vars, constrs)]} otimizados com {algo}"
             + "}\\vspace{0.5cm}\n"
             + "\\begin{tabular}{rrrrr}\n"
             + "\\hline\n"
-            + "\\textbf{População}&\textbf{Tempo Médio}&\textbf{Pior Objetivo}&\textbf{Melhor Objetivo}&\textbf{Média dos Objetivos}\\\\\n"
+            + "\\textbf{População}&\\textbf{Tempo Médio}&\\textbf{Pior Objetivo}&\\textbf{Melhor Objetivo}&\\textbf{Média dos Objetivos}\\\\\n"
             + "\\hline\n"
         )
 
     def header_2():
         return (
-            "\\begin{table}[]\n"
-            + "\\centering\n"
-            + "\\caption{Tempo relativo entre a otimização via PSO e NDE"
+            "\\caption{Tempo relativo entre a otimização via PSO e NDE"
             + f" para o cenário {cenarios[(vars, constrs)]}"
             + "}\n\\vspace{0.5cm}\n"
             + "\\begin{tabular}{rrr}\n"
@@ -156,18 +151,17 @@ def create_resume_table(pso_params: list, de_params: list):
     def tail():
         return(
             "\\end{tabular}\n"
-            + "\\end{table}\n"
         )
 
-    with open(f"analisys/{cenarios[(vars, constrs)]}_ps_table.txt", "w") as f:
+    with open(f"analisys/{cenarios[(vars, constrs)]}_ps_table.tex", "w") as f:
         f.write(header("PSO"))
         f.write(ps_data)
         f.write(tail())
-    with open(f"analisys/{cenarios[(vars, constrs)]}_de_table.txt", "w") as f:
+    with open(f"analisys/{cenarios[(vars, constrs)]}_de_table.tex", "w") as f:
         f.write(header("NDE"))
         f.write(de_data)
         f.write(tail())
-    with open(f"analisys/{cenarios[(vars, constrs)]}_comp_table.txt", "w") as f:
+    with open(f"analisys/{cenarios[(vars, constrs)]}_comp_table.tex", "w") as f:
         f.write(header_2())
         f.write(comp_data)
         f.write(tail())
