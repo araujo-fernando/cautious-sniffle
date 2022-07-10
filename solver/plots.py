@@ -120,23 +120,57 @@ def create_resume_table(pso_params: list, de_params: list):
         de_pop, de_time, de_time_std, de_min, de_max, de_mean, de_std = extract_data(de_param, "de")
         time_ratio = 100*ps_time/de_time
 
-        ps_data += f"{cenarios[(vars, constrs)]}&"
-        ps_data += f"${ps_pop}$&${ps_time:.2f}\\pm{ps_time_std:.2f}$&${ps_min:.2f}$&${ps_max:.2f}$&${ps_mean:.2f}\\pm{ps_std:.2f}$\n"
+        ps_data += f"${ps_pop}$&${ps_time:.2f}\\pm{ps_time_std:.2f}$&${ps_min:.2f}$&${ps_max:.2f}$&${ps_mean:.2f}\\pm{ps_std:.2f}$\\\\\n"
     
-        de_data += f"{cenarios[(vars, constrs)]}&"
-        de_data += f"${de_pop}$&${de_time:.2f}\\pm{de_time_std:.2f}$&${de_min:.2f}$&${de_max:.2f}$&${de_mean:.2f}\\pm{de_std:.2f}$\n"
+        de_data += f"${de_pop}$&${de_time:.2f}\\pm{de_time_std:.2f}$&${de_min:.2f}$&${de_max:.2f}$&${de_mean:.2f}\\pm{de_std:.2f}$\\\\\n"
 
-        comp_data += f"{cenarios[(vars, constrs)]}&${ps_pop}$&${time_ratio:.2f}\\%$\n"
+        comp_data += f"{de_pop}&${ps_pop}$&${time_ratio:.2f}\\%$\\\\\n"
 
-    with open("ps_table.txt", "w") as f:
-        f.write(header)
+    def header(algo):
+        return (
+            "\\begin{table}[]\n"
+            + "\\centering\n"
+            + "\\caption{Resultados dos experimentos para os modelos do cenário }\n"
+            + f"{cenarios[(vars, constrs)]} otimizados com {algo}"
+            + "\\vspace{0.5cm}\n"
+            + "\\begin{adjustbox}{totalheight=\textheight-6.0pt, width=\textwidth-4.35pt, keepaspectratio}\n"
+            + "\\begin{tabular}{rrrrr}\n"
+            + "\\hline\n"
+            + "\\textbf{População}&\textbf{Tempo Médio}&\textbf{Pior Objetivo}&\textbf{Melhor Objetivo}&\textbf{Média dos Objetivos}\\\\\n"
+            + "\\hline\n"
+        )
+
+    def header_2():
+        return (
+            "\\begin{table}[]\n"
+            + "\\centering\n"
+            + "\\caption{Tempo relativo entre a otimização via PSO e NDE}"
+            + f" para o cenário {cenarios[(vars, constrs)]}"
+            + "\\vspace{0.5cm}\n"
+            + "\\begin{tabular}{rrr}\n"
+            + "\\hline\n"
+            + "\\textbf{População NDE}&\\textbf{População PSO}&\\textbf{Tempo Relativo}\\\\\n"
+            + "\\hline\n"
+        )
+
+    def tail():
+        return(
+            "\\end{tabular}\n"
+            + "\\end{table}\n"
+        )
+
+    with open(f"cenarios[(vars, constrs)]}_ps_table.txt", "w") as f:
+        f.write(header("PSO"))
         f.write(ps_data)
-    with open("de_table.txt", "w") as f:
-        f.write(header)
+        f.write(tail())
+    with open("cenarios[(vars, constrs)]}_de_table.txt", "w") as f:
+        f.write(header("NDE"))
         f.write(de_data)
-    with open("comp_table.txt", "w") as f:
-        f.write("Cenário & População & Razão de Tempo\n")
+        f.write(tail())
+    with open("cenarios[(vars, constrs)]}_comp_table.txt", "w") as f:
+        f.write(header_2())
         f.write(comp_data)
+        f.write(tail())
 
 # ['solve_time', 'evo_data', 'num_vars', 'num_constrs', 'objectives',
 #  'solution_variables_values', 'population', 'max_iterations']
