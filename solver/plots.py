@@ -128,9 +128,13 @@ def create_resume_table(pso_params: list, de_params: list):
 
     def header(algo):
         return (
-            "\\caption{Resultados dos experimentos para os modelos do cenário "
+            "\\begin{table}[h]\n"
+            + "\\centering\n"
+            + "\\caption{Resultados dos experimentos para os modelos do cenário "
             + f"{cenarios[(vars, constrs)]} otimizados com {algo}"
-            + "}\\vspace{0.5cm}\n"
+            + "\\label{"
+            + f"tab:resultado_cenario_{cenarios[(vars, constrs)]}_{algo}"
+            + "}}\\vspace{0.5cm}\n"
             + "\\begin{tabular}{rrrrr}\n"
             + "\\hline\n"
             + "\\textbf{População}&\\textbf{Tempo Médio}&\\textbf{Pior Objetivo}&\\textbf{Melhor Objetivo}&\\textbf{Média dos Objetivos}\\\\\n"
@@ -139,7 +143,9 @@ def create_resume_table(pso_params: list, de_params: list):
 
     def header_2():
         return (
-            "\\caption{Tempo relativo entre a otimização via PSO e NDE"
+            "\\begin{table}[h]\n"
+            + "\\centering\n"
+            + "\\caption{Tempo relativo entre a otimização via PSO e NDE"
             + f" para o cenário {cenarios[(vars, constrs)]}"
             + "}\n\\vspace{0.5cm}\n"
             + "\\begin{tabular}{rrr}\n"
@@ -151,6 +157,7 @@ def create_resume_table(pso_params: list, de_params: list):
     def tail():
         return(
             "\\end{tabular}\n"
+            + "\\end{table}"
         )
 
     with open(f"analisys/{cenarios[(vars, constrs)]}_ps_table.tex", "w") as f:
