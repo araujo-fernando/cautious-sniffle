@@ -160,15 +160,15 @@ def create_resume_table(pso_params: list, de_params: list):
             + "\\end{table}\n"
         )
 
-    with open(f"cenarios[(vars, constrs)]}_ps_table.txt", "w") as f:
+    with open(f"analisys/cenarios[(vars, constrs)]}_ps_table.txt", "w") as f:
         f.write(header("PSO"))
         f.write(ps_data)
         f.write(tail())
-    with open("cenarios[(vars, constrs)]}_de_table.txt", "w") as f:
+    with open("analisys/cenarios[(vars, constrs)]}_de_table.txt", "w") as f:
         f.write(header("NDE"))
         f.write(de_data)
         f.write(tail())
-    with open("cenarios[(vars, constrs)]}_comp_table.txt", "w") as f:
+    with open("analisys/cenarios[(vars, constrs)]}_comp_table.txt", "w") as f:
         f.write(header_2())
         f.write(comp_data)
         f.write(tail())
@@ -176,7 +176,7 @@ def create_resume_table(pso_params: list, de_params: list):
 # ['solve_time', 'evo_data', 'num_vars', 'num_constrs', 'objectives',
 #  'solution_variables_values', 'population', 'max_iterations']
 
-path = "solver/results/"
+path = "results/"
 files = os.listdir(path)
 pso_files = [f for f in files if f.endswith("pso.json")]
 de_files = [f for f in files if f.endswith("de.json")]

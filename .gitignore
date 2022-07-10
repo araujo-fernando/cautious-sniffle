@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 #other
-solver/results/
+results/
 *.DS_Store
 *settings.json
