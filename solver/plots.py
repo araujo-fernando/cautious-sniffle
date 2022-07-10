@@ -144,9 +144,9 @@ def create_resume_table(pso_params: list, de_params: list):
         return (
             "\\begin{table}[]\n"
             + "\\centering\n"
-            + "\\caption{Tempo relativo entre a otimização via PSO e NDE}"
+            + "\\caption{Tempo relativo entre a otimização via PSO e NDE"
             + f" para o cenário {cenarios[(vars, constrs)]}"
-            + "\\vspace{0.5cm}\n"
+            + "}\n\\vspace{0.5cm}\n"
             + "\\begin{tabular}{rrr}\n"
             + "\\hline\n"
             + "\\textbf{População NDE}&\\textbf{População PSO}&\\textbf{Tempo Relativo}\\\\\n"
