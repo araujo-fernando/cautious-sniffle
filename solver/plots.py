@@ -9,6 +9,7 @@ import os
 import re
 
 from pprint import pprint
+from tqdm import tqdm
 
 def normalize_evolution_data(evolution_data: list[list[list[float]]]):
     objectives = [[val[0] for val in it] for it in evolution_data]
@@ -182,17 +183,28 @@ de_files = [f for f in files if f.endswith("de.json")]
 
 regex = r"(\d+)it_(\d+)_ind(\d+)var_(\d+)"
 
-pso_params = list(set(re.match(regex, arq).groups() for arq in pso_files))
-de_params = list(set(re.match(regex, arq).groups() for arq in de_files))
+all_pso_params = list(set(re.match(regex, arq).groups() for arq in pso_files))
+all_de_params = list(set(re.match(regex, arq).groups() for arq in de_files))
 
 # iterations, population, variables, constraints
-pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in pso_params if p[0] == "1000" and p[1] == "50"]
-de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in de_params if p[0] == "333" and p[1] == "50"]
+variables = {"87", "181", "251", "435", "559", "774"}
+for vari in tqdm(variables):
+    pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_pso_params if p[0] == "1000" and p[2] == vari]
+    de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_de_params if p[0] == "333" and p[2] == vari]
+
+    pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
+    de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
+
+    pprint(pso_params)
+    create_resume_table(pso_params, de_params)
+
+# iterations, population, variables, constraints
+pso_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_pso_params if p[0] == "1000" and p[1] == "50"]
+de_params = [(int(p[0]), int(p[1]), int(p[2]), int(p[3])) for p in all_de_params if p[0] == "333" and p[1] == "50"]
 
 pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
 de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
 
-# create_resume_table(pso_params, de_params)
 pprint(pso_params)
 create_heatmaps(de_params, "de")
 create_heatmaps(pso_params, "pso")
