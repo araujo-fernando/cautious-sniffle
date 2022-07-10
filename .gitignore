@@ -130,5 +130,7 @@ dmypy.json
 
 #other
 results/
+figures/
+analisys/
 *.DS_Store
 *settings.json
