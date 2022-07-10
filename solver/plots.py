@@ -160,15 +160,15 @@ def create_resume_table(pso_params: list, de_params: list):
             + "\\end{table}\n"
         )
 
-    with open(f"analisys/cenarios[(vars, constrs)]}_ps_table.txt", "w") as f:
+    with open(f"analisys/{cenarios[(vars, constrs)]}_ps_table.txt", "w") as f:
         f.write(header("PSO"))
         f.write(ps_data)
         f.write(tail())
-    with open("analisys/cenarios[(vars, constrs)]}_de_table.txt", "w") as f:
+    with open("analisys/{cenarios[(vars, constrs)]}_de_table.txt", "w") as f:
         f.write(header("NDE"))
         f.write(de_data)
         f.write(tail())
-    with open("analisys/cenarios[(vars, constrs)]}_comp_table.txt", "w") as f:
+    with open("analisys/{cenarios[(vars, constrs)]}_comp_table.txt", "w") as f:
         f.write(header_2())
         f.write(comp_data)
         f.write(tail())
