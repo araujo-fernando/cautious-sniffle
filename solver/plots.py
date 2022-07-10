@@ -131,10 +131,9 @@ def create_resume_table(pso_params: list, de_params: list):
         return (
             "\\begin{table}[]\n"
             + "\\centering\n"
-            + "\\caption{Resultados dos experimentos para os modelos do cenário }\n"
+            + "\\caption{Resultados dos experimentos para os modelos do cenário "
             + f"{cenarios[(vars, constrs)]} otimizados com {algo}"
-            + "\\vspace{0.5cm}\n"
-            + "\\begin{adjustbox}{totalheight=\textheight-6.0pt, width=\textwidth-4.35pt, keepaspectratio}\n"
+            + "}\\vspace{0.5cm}\n"
             + "\\begin{tabular}{rrrrr}\n"
             + "\\hline\n"
             + "\\textbf{População}&\textbf{Tempo Médio}&\textbf{Pior Objetivo}&\textbf{Melhor Objetivo}&\textbf{Média dos Objetivos}\\\\\n"
@@ -195,7 +194,6 @@ for vari in tqdm(variables):
     pso_params = sorted(pso_params, key=lambda p: (p[1], p[2], p[3]))
     de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3]))
 
-    pprint(pso_params)
     create_resume_table(pso_params, de_params)
 
 # iterations, population, variables, constraints
