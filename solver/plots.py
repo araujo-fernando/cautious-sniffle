@@ -124,7 +124,7 @@ def create_resume_table(pso_params: list, de_params: list):
     
         de_data += f"${de_pop}$&${de_time:.2f}\\pm{de_time_std:.2f}$&${de_min:.2f}$&${de_max:.2f}$&${de_mean:.2f}\\pm{de_std:.2f}$\\\\\n"
 
-        comp_data += f"{de_pop}&${ps_pop}$&${time_ratio:.2f}\\%$\\\\\n"
+        comp_data += f"${de_pop}$&${ps_pop}$&${time_ratio:.2f}\\%$\\\\\n"
 
     def header(algo):
         return (
