@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import matplotlib.pyplot as plt
+import matplotlib
 import seaborn as sns
 import numpy as np
 
@@ -10,6 +10,7 @@ import re
 
 from pprint import pprint
 from tqdm import tqdm
+from matplotlib import pyplot as plt
 
 def normalize_evolution_data(evolution_data: list[list[list[float]]]):
     objective_pen = [[sum(val) for val in it] for it in evolution_data]
@@ -46,6 +47,9 @@ def normalize_evolution_data(evolution_data: list[list[list[float]]]):
 
 
 def create_heatmaps(parameters: list, algo: str):
+    if len(parameters) == 0:
+        return
+
     def get_best_execution_data(params: tuple, algo: str="de"):
         iters, indiv, vars, constrs = params
         experiment_files = [
@@ -70,7 +74,7 @@ def create_heatmaps(parameters: list, algo: str):
     cenarios = {(87, 86): "A", (181, 153): "B", (251, 177): "C", (435, 268): "D", (559, 300): "E", (774, 420): "F"}
 
     fig, axn = plt.subplots(3, 2, sharex=True, sharey=True, figsize=(9, 9))
-
+    
     for i in range(len(parameters)):
         par = parameters[i]
         iter, pop, vars, constrs = par
@@ -85,9 +89,14 @@ def create_heatmaps(parameters: list, algo: str):
         pen_obj, objs, pens = normalize_evolution_data(evo_data)
         ax = plt.subplot(3, 2, i+1)
         sns.heatmap(objs, annot=False, ax=ax)
+        ax.set_title(f"Função Objetivo do Cenário {cenario}")
         plt.xticks(xticks, xlabels)
         plt.yticks(yticks, ylabels)
-        ax.set_title(f"Função Objetivo do Cenário {cenario}")
+        plt.xlim(None, None)
+        if algo=="de":
+            ax.set_xscale("log")
+            ax.set_xticks([1, 10, 100, 200, 300])
+            ax.get_xaxis().set_major_formatter(matplotlib.ticker.LogFormatter())
 
     plt.setp(axn[-1, :], xlabel='Iteração')
     plt.setp(axn[:, 0], ylabel='Indivíduo')
@@ -296,4 +305,4 @@ for pop in tqdm(population):
     de_params = sorted(de_params, key=lambda p: (p[1], p[2], p[3])) 
 
     create_heatmaps(de_params, "de")
-    create_heatmaps(pso_params, "pso")
+    # create_heatmaps(pso_params, "pso")
