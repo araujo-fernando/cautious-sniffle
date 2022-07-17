@@ -1,4 +1,6 @@
 from __future__ import annotations
+import warnings
+warnings.filterwarnings("ignore")
 
 import operator as op
 
@@ -33,11 +35,7 @@ class Expression:
         except AttributeError:
             val_b = self.b
 
-        try:
-            res = self.op(val_a, val_b)
-        except RuntimeWarning:
-            pass
-        return res
+        return self.op(val_a, val_b)
 
     def __repr__(self) -> str:
         op_name = self.op.__name__
