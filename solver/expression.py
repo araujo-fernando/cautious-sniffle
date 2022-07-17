@@ -33,7 +33,11 @@ class Expression:
         except AttributeError:
             val_b = self.b
 
-        return self.op(val_a, val_b)
+        try:
+            res = self.op(val_a, val_b)
+        except RuntimeWarning:
+            pass
+        return res
 
     def __repr__(self) -> str:
         op_name = self.op.__name__
